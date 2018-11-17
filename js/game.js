@@ -20,8 +20,10 @@ var config = {
     var bombs;
     var gameOver = false;
     var playing = false;
+    var score = 0;
 
     var game = new Phaser.Game(config);
+    console.log(game);
 
     function preload() {
         this.load.image('sky', 'assets/sky.png');
@@ -31,6 +33,7 @@ var config = {
 
     function create() {
         this.add.image(400, 300, 'sky');
+        scoreText = this.add.text(16, 16, 'Score: ', {fontSize: '16px'});
         player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
         player.setCollideWorldBounds(true);
         player.setBounce(1);
@@ -40,13 +43,12 @@ var config = {
         bombs = this.physics.add.group();
         var bomb;
 
-        for (var i = 0; i < 10; i++) {
-            bomb = bombs.create(Phaser.Math.Between(0, 800), Phaser.Math.Between(0, 600), 'bomb');
-            bomb.setBounce(1);
-            bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(200, 200);
-            bomb.allowGravity = false;
-        }
+        addBombs = this.time.addEvent({
+            delay: 2000,
+            callback: addBomb,
+            callbackScope: this,
+            repeat: 99
+        });
             
         this.physics.add.collider(bombs, player, collideWithBomb, null, this);
     
@@ -56,6 +58,8 @@ var config = {
             player.setVelocity(0, 0);
 
         if (gameOver) {
+            this.add.text(250, 250, "GAME OVER!", { fontSize: '64px' });
+
            return;
         }
             
@@ -82,4 +86,20 @@ var config = {
         player.setTint(0xff0000);
 
         gameOver = true;
+    }
+
+    function addBomb() {
+
+        if (gameOver) {
+            return;
+        }
+
+        bomb = bombs.create(Phaser.Math.Between(0, 800), Phaser.Math.Between(0, 600), 'bomb');
+        bomb.setBounce(1);
+        bomb.setCollideWorldBounds(true);
+        bomb.setVelocity(200, 200);
+        bomb.allowGravity = false;
+
+        score += 1;
+        scoreText.setText('Score: ' + score);
     }
