@@ -19,6 +19,7 @@ var config = {
     var cursors;
     var bombs;
     var gameOver = false;
+    var playing = false;
 
     var game = new Phaser.Game(config);
 
@@ -46,26 +47,32 @@ var config = {
             bomb.setVelocity(200, 200);
             bomb.allowGravity = false;
         }
-        
+            
         this.physics.add.collider(bombs, player, collideWithBomb, null, this);
+    
     }
 
     function update() {
-        player.setVelocity(0, 0);
+            player.setVelocity(0, 0);
 
         if (gameOver) {
-            return;
+           return;
         }
-        
+            
         if (cursors.up.isDown) {
+            player.angle = 0;
             player.setVelocity(0, -200);
         } else if (cursors.down.isDown) {
+            player.angle = 180;
             player.setVelocity(0, 200);
         } else if (cursors.left.isDown) {
+            player.angle = 270;
             player.setVelocity(-200, 0);
         } else if (cursors.right.isDown) {
+            player.angle = 90;
             player.setVelocity(200, 0);
         }
+        
 
     }
 
