@@ -23,19 +23,19 @@ var config = {
     var score = 0;
 
     var game = new Phaser.Game(config);
-    console.log(game);
 
     function preload() {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.image('ship', 'assets/shuttle2.png');
+
+        pointer = this.input.activePointer;
     }
 
     function create() {
         this.add.image(400, 300, 'sky');
         scoreText = this.add.text(16, 16, 'Score: ', {fontSize: '16px'});
         player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
-        player.setCollideWorldBounds(true);
         player.setBounce(1);
 
         cursors = this.input.keyboard.createCursorKeys();
@@ -55,12 +55,12 @@ var config = {
     }
 
     function update() {
-            player.setVelocity(0, 0);
+        player.setVelocity(0, 0);
 
         if (gameOver) {
-            this.add.text(250, 250, "GAME OVER!", { fontSize: '64px' });
+            this.add.text(300, 300, "GAME OVER!", { fontSize: '64px' });
 
-           return;
+            return;
         }
             
         if (cursors.up.isDown) {
@@ -75,6 +75,16 @@ var config = {
         } else if (cursors.right.isDown) {
             player.angle = 90;
             player.setVelocity(200, 0);
+        }
+
+        if (player.x < -10) {
+            player.x = 800;
+        } else if (player.x > 810) {
+            player.x = 0;
+        } else if (player.y < -10) {
+            player.y = 600;
+        } else if (player.y > 610) {
+            player.y = 0;
         }
         
 
