@@ -21,6 +21,7 @@ var config = {
     var gameOver = false;
     var playing = false;
     var score = 0;
+    var engineSound;
 
     var game = new Phaser.Game(config);
 
@@ -29,7 +30,8 @@ var config = {
         this.load.image('bomb', 'assets/bomb.png');
         this.load.image('ship', 'assets/shuttle2.png');
 
-        pointer = this.input.activePointer;
+        this.load.audio('engine', 'assets/engine.wav');
+        this.load.audio('gameover', 'assets/gameover.wav');
     }
 
     function create() {
@@ -66,15 +68,19 @@ var config = {
         if (cursors.up.isDown) {
             player.angle = 0;
             player.setVelocity(0, -200);
+            this.sound.play('engine');
         } else if (cursors.down.isDown) {
             player.angle = 180;
             player.setVelocity(0, 200);
+            this.sound.play('engine');
         } else if (cursors.left.isDown) {
             player.angle = 270;
             player.setVelocity(-200, 0);
+            this.sound.play('engine');
         } else if (cursors.right.isDown) {
             player.angle = 90;
             player.setVelocity(200, 0);
+            this.sound.play('engine');
         }
 
         if (player.x < -10) {
@@ -96,6 +102,8 @@ var config = {
         player.setTint(0xff0000);
 
         gameOver = true;
+
+        this.sound.play('gameover');
     }
 
     function addBomb() {
