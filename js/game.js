@@ -1,5 +1,8 @@
+let mainScene = new Phaser.Scene('main');
+let titleScene = new Phaser.Scene('title');
 
-var config = {
+
+let config = {
         type: Phaser.AUTO,
         width: 800,
         height: 600,
@@ -9,23 +12,19 @@ var config = {
                 debug: false
             }
         },
-        scene: {
-            preload: preload,
-            create: create,
-            update: update
-        }
+        scene: [titleScene, mainScene]
     };
     
-    var cursors;
-    var bombs;
-    var gameOver = false;
-    var playing = false;
-    var score = 0;
-    var engineSound;
+    let cursors;
+    let bombs;
+    let gameOver = false;
+    let playing = false;
+    let score = 0;
+    let engineSound;
 
-    var game = new Phaser.Game(config);
+    let game = new Phaser.Game(config);
 
-    function preload() {
+    mainScene.preload = function() {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.image('ship', 'assets/shuttle2.png');
@@ -34,7 +33,7 @@ var config = {
         this.load.audio('gameover', 'assets/gameover.wav');
     }
 
-    function create() {
+    mainScene.create = function() {
         this.add.image(400, 300, 'sky');
         scoreText = this.add.text(16, 16, 'Score: ', {fontSize: '16px'});
         player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
@@ -43,7 +42,7 @@ var config = {
         cursors = this.input.keyboard.createCursorKeys();
 
         bombs = this.physics.add.group();
-        var bomb;
+        let bomb;
 
         addBombs = this.time.addEvent({
             delay: 2000,
@@ -53,14 +52,21 @@ var config = {
         });
             
         this.physics.add.collider(bombs, player, collideWithBomb, null, this);
+
+        gameOver = false;
     
     }
 
-    function update() {
+    mainScene.update = function() {
+        if (cursors.space.isDown && gameOver) {
+            this.scene.start('title');
+        }
+        
         player.setVelocity(0, 0);
 
         if (gameOver) {
-            this.add.text(300, 300, "GAME OVER!", { fontSize: '64px' });
+            this.add.text(200, 150, "GAME OVER!", { fontSize: '64px' });
+            this.add.text(100, 300, "PRESS SPACE BAR TO RESTART!", { fontSize: '32px'});
 
             return;
         }
@@ -93,7 +99,6 @@ var config = {
             player.y = 0;
         }
         
-
     }
 
     function collideWithBomb(player, bomb) {
@@ -120,4 +125,22 @@ var config = {
 
         score += 1;
         scoreText.setText('Score: ' + score);
+    }
+
+    titleScene.preload = function() {
+        this.load.image('sky', 'assets/sky.png');
+        this.load.image('ship', 'assets/shuttle2.png');
+    }
+
+    titleScene.create = function() {
+        this.add.image(400, 300, 'sky');
+        player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
+        this.add.text(150, 150, 'PRESS SPACE BAR TO START!', {fontSize: '32px'});
+        cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    titleScene.update = function() {
+        if (cursors.space.isDown) {
+            this.scene.start('main');
+        }
     }
