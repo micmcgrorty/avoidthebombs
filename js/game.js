@@ -55,13 +55,14 @@ let config = {
 
         gameOver = false;
     
+        score = 0;
     }
 
     mainScene.update = function() {
         if (cursors.space.isDown && gameOver) {
             this.scene.start('title');
         }
-        
+
         player.setVelocity(0, 0);
 
         if (gameOver) {
@@ -117,7 +118,25 @@ let config = {
             return;
         }
 
-        bomb = bombs.create(Phaser.Math.Between(0, 800), Phaser.Math.Between(0, 600), 'bomb');
+        let side = Phaser.Math.Between(0, 3);
+        let x;
+        let y;
+
+        if (side == 0) {
+            x = Phaser.Math.Between(0, 0);
+            y = Phaser.Math.Between(0, 600);
+        } else if (side == 1) {
+            x = Phaser.Math.Between(0, 800);
+            y = Phaser.Math.Between(0, 0);
+        } else if (side == 2) {
+            x = Phaser.Math.Between(800, 800);
+            y = Phaser.Math.Between(0, 600);
+        } else if (side == 3) {
+            x = Phaser.Math.Between(0, 800);
+            y = Phaser.Math.Between(660, 600);
+        }
+
+        bomb = bombs.create(x, y, 'bomb');
         bomb.setBounce(1);
         bomb.setCollideWorldBounds(true);
         bomb.setVelocity(200, 200);
