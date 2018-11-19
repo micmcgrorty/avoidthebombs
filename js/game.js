@@ -21,6 +21,8 @@ let config = {
     let score = 0;
     let engineSound;
     let highScore = 0;
+    let difficulty = 2;
+    let interval = 5000;
 
     let game = new Phaser.Game(config);
 
@@ -46,7 +48,7 @@ let config = {
         let bomb;
 
         addBombs = this.time.addEvent({
-            delay: 2000,
+            delay: interval,
             callback: addBomb,
             callbackScope: this,
             repeat: 99
@@ -155,12 +157,22 @@ let config = {
     titleScene.create = function() {
         this.add.image(400, 300, 'sky');
         player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
-        this.add.text(150, 150, 'PRESS SPACE BAR TO START!', {fontSize: '32px'});
+        this.add.text(150, 150, 'PRESS E TO START ON EASY!', {fontSize: '32px'});
+        this.add.text(150, 190, 'PRESS M TO START ON MEDIUM!', {fontSize: '32px'});
+        this.add.text(150, 230, 'PRESS H TO START ON HARD!', {fontSize: '32px'});
         cursors = this.input.keyboard.createCursorKeys();
+        diffSelect = this.input.keyboard.addKeys({ 'easy': Phaser.Input.Keyboard.KeyCodes.E, 'med': Phaser.Input.Keyboard.KeyCodes.M, 'hard':Phaser.Input.Keyboard.KeyCodes.H });
     }
 
     titleScene.update = function() {
-        if (cursors.space.isDown) {
+        if (diffSelect.easy.isDown) {
+            interval = 10000;
+            this.scene.start('main');
+        } else if (diffSelect.med.isDown) {
+            interval = 5000;
+            this.scene.start('main');
+        } else if (diffSelect.hard.isDown) {
+            interval = 2000;
             this.scene.start('main');
         }
     }
