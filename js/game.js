@@ -1,5 +1,6 @@
 let mainScene = new Phaser.Scene('main');
 let titleScene = new Phaser.Scene('title');
+let gameOverScene = new Phaser.Scene('gameoverscene');
 
 let config = {
         type: Phaser.AUTO,
@@ -11,7 +12,7 @@ let config = {
                 debug: false
             }
         },
-        scene: [titleScene, mainScene]
+        scene: [titleScene, mainScene, gameOverScene]
     };
     
     let cursors;
@@ -27,9 +28,7 @@ let config = {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.image('ship', 'assets/shuttle2.png');
-        this.load.image('laser', 'assets/star.png');
 
-        this.load.audio('engine', 'assets/engine.wav');
         this.load.audio('gameover', 'assets/gameover.wav');
     }
 
@@ -67,36 +66,20 @@ let config = {
             highScore = score;
         }
 
-        if (cursors.space.isDown && gameOver) {
-            this.scene.start('title');
-        }
-
         player.setVelocity(0, 0);
-
-        if (gameOver) {
-            this.add.text(200, 150, "GAME OVER!", { fontSize: '64px' });
-            this.add.text(100, 300, "PRESS SPACE BAR TO RESTART!", { fontSize: '32px'});
-            highScoreText.setText('High Score: ' + highScore);
-
-            return;
-        }
             
         if (cursors.up.isDown) {
             player.angle = 0;
             player.setVelocity(0, -200);
-            this.sound.play('engine');
         } else if (cursors.down.isDown) {
             player.angle = 180;
             player.setVelocity(0, 200);
-            this.sound.play('engine');
         } else if (cursors.left.isDown) {
             player.angle = 270;
             player.setVelocity(-200, 0);
-            this.sound.play('engine');
         } else if (cursors.right.isDown) {
             player.angle = 90;
             player.setVelocity(200, 0);
-            this.sound.play('engine');
         }
 
         if (player.x < -10) {
@@ -107,6 +90,14 @@ let config = {
             player.y = 600;
         } else if (player.y > 610) {
             player.y = 0;
+        }
+
+        if (cursors.space.isDown && gameOver) {
+            this.scene.start('title');
+        }
+
+        if (gameOver) {
+            this.scene.start('gameoverscene');
         }
 
     }
@@ -171,5 +162,24 @@ let config = {
     titleScene.update = function() {
         if (cursors.space.isDown) {
             this.scene.start('main');
+        }
+    }
+
+    gameOverScene.preload = function() {
+        this.load.image('sky', 'assets/sky.png');
+    }
+
+    gameOverScene.create = function() {
+        this.add.image(400, 300, 'sky');
+        this.add.text(200, 150, "GAME OVER!", { fontSize: '64px' });
+        this.add.text(100, 300, "PRESS SPACE BAR TO RESTART!", { fontSize: '32px'});
+        highScoreText.setText('High Score: ' + highScore);
+    }
+
+    gameOverScene.update = function() {
+        cursors = this.input.keyboard.createCursorKeys();
+
+        if (cursors.space.isDown) {
+            this.scene.start('title');
         }
     }
