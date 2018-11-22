@@ -30,6 +30,7 @@ mainScene.preload = function() {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('ship', 'assets/shuttle2.png');
+    this.load.image('star', 'assets/star.png');
 
     this.load.audio('gameover', 'assets/gameover.wav');
 }
@@ -47,6 +48,9 @@ mainScene.create = function() {
     bombs = this.physics.add.group();
     let bomb;
 
+    stars = this.physics.add.group();
+    let star;
+
     addBombs = this.time.addEvent({
         delay: interval,
         callback: addBomb,
@@ -55,6 +59,7 @@ mainScene.create = function() {
     });
             
     this.physics.add.collider(bombs, player, collideWithBomb, null, this);
+    this.physics.add.collider(stars, bombs, starHitBomb, null, this);
 
     gameOver = false;
     
@@ -71,17 +76,13 @@ mainScene.update = function() {
     player.setVelocity(0, 0);
             
     if (cursors.up.isDown) {
-        player.angle = 0;
-        player.setVelocity(0, -200);
-    } else if (cursors.down.isDown) {
-        player.angle = 180;
-        player.setVelocity(0, 200);
+        this.physics.velocityFromAngle(player.angle - 90, 200, player.body.velocity);
     } else if (cursors.left.isDown) {
-        player.angle = 270;
-        player.setVelocity(-200, 0);
+        player.angle -= 5;
     } else if (cursors.right.isDown) {
-        player.angle = 90;
-        player.setVelocity(200, 0);
+        player.angle += 5;
+    } else if (cursors.space.isDown) {
+        fireLaser(this);
     }
 
     if (player.x < -10) {
@@ -143,6 +144,19 @@ function addBomb() {
 
     score += 1;
     scoreText.setText('Score: ' + score);
+}
+
+function fireLaser(game) {
+    star = stars.create(player.x, player.y, 'star').setScale(0.7);
+    star.allowGravity = false;
+    game.physics.velocityFromAngle(player.angle - 90, 200, star.body.velocity);
+
+}
+
+function starHitBomb(star, bomb) {
+    star.disableBody(true, true);
+    bomb.disableBody(true, true);
+
 }
 
 titleScene.preload = function() {
