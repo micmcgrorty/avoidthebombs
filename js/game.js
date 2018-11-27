@@ -39,6 +39,10 @@ mainScene.create = function() {
     this.add.image(400, 300, 'sky');
     scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '16px'});
     highScoreText = this.add.text(660, 16, 'High Score: ' + highScore, {fontSize: '16px'});
+    instructions = this.add.text(100, 400, 'Turn with left and right, thrust with up and blast with space!', {fontSize: '16px'});
+    if (highScore > 0) {
+        instructions.setText('');
+    }
         
     player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
     player.setBounce(1);
@@ -68,6 +72,10 @@ mainScene.create = function() {
 }
 
 mainScene.update = function() {
+
+    if (score >= 2) {
+        instructions.setText('');
+    }
 
     if (score > highScore) {
         highScore = score;
