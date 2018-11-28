@@ -1,7 +1,9 @@
+// Define scenes
 let mainScene = new Phaser.Scene('main');
 let titleScene = new Phaser.Scene('title');
 let gameOverScene = new Phaser.Scene('gameoverscene');
 
+// Define game config
 let config = {
         type: Phaser.AUTO,
         width: 800,
@@ -14,7 +16,8 @@ let config = {
         },
         scene: [titleScene, mainScene, gameOverScene]
 };
-    
+
+// Define global variables    
 let cursors;
 let bombs;
 let gameOver = false;
@@ -24,13 +27,51 @@ let highScore = 0;
 let difficulty = 2;
 let interval = 5000;
 
+// Define game
 let game = new Phaser.Game(config);
 
+// Title preload - load background and ship
+titleScene.preload = function() {
+    this.load.image('sky', 'assets/sky.png');
+    this.load.image('ship', 'assets/shuttle2.png');
+}
+
+// Title create - display background and ship
+//              - display difficulty levels
+//              - define keyboard inputs for selecting difficulty
+titleScene.create = function() {
+    this.add.image(400, 300, 'sky');
+    player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
+    this.add.text(150, 150, 'PRESS E TO START ON EASY!', {fontSize: '32px'});
+    this.add.text(150, 190, 'PRESS M TO START ON MEDIUM!', {fontSize: '32px'});
+    this.add.text(150, 230, 'PRESS H TO START ON HARD!', {fontSize: '32px'});
+    cursors = this.input.keyboard.createCursorKeys();
+    diffSelect = this.input.keyboard.addKeys({ 'easy': Phaser.Input.Keyboard.KeyCodes.E, 'med': Phaser.Input.Keyboard.KeyCodes.M, 'hard':Phaser.Input.Keyboard.KeyCodes.H });
+}
+
+// Title update - set bomb interval depending on which key pressed then start main scene
+titleScene.update = function() {
+    if (diffSelect.easy.isDown) {
+        interval = 10000;
+        this.scene.start('main');
+    } else if (diffSelect.med.isDown) {
+        interval = 5000;
+        this.scene.start('main');
+    } else if (diffSelect.hard.isDown) {
+        interval = 2000;
+        this.scene.start('main');
+    }
+}
+
+// Main preload - load bomb and star images
 mainScene.preload = function() {
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('star', 'assets/star.png');
 }
 
+// Main create - add background and ship
+//             - add score and high score text and instruction text
+//             - add bomb group and star group, add collision detection and add timed event for adding bombs
 mainScene.create = function() {
     this.add.image(400, 300, 'sky');
     scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '16px'});
@@ -41,7 +82,6 @@ mainScene.create = function() {
     }
         
     player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
-    player.setBounce(1);
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -67,6 +107,9 @@ mainScene.create = function() {
 
 }
 
+// Main update - Update score and high score
+//             - Move ship or fire star depending on button pressed
+//             - If game over then start new scene
 mainScene.update = function() {
 
     if (score >= 2) {
@@ -105,6 +148,24 @@ mainScene.update = function() {
 
 }
 
+// Game over create - Add instructions to restart and update high score
+gameOverScene.create = function() {
+    this.add.image(400, 300, 'sky');
+    this.add.text(200, 150, "GAME OVER!", { fontSize: '64px' });
+    this.add.text(100, 300, "PRESS SPACE BAR TO RESTART!", { fontSize: '32px'});
+    highScoreText.setText('High Score: ' + highScore);
+}
+
+// Game over update - back to title if button pressed
+gameOverScene.update = function() {
+    cursors = this.input.keyboard.createCursorKeys();
+
+    if (cursors.space.isDown) {
+        this.scene.start('title');
+    }
+}
+
+// Game over if ship and bomb collide
 function collideWithBomb(player, bomb) {
     this.physics.pause();
 
@@ -114,6 +175,7 @@ function collideWithBomb(player, bomb) {
 
 }
 
+// Add bombs at a random place off screen and increase score by 1
 function addBomb() {
 
     if (gameOver) {
@@ -148,6 +210,7 @@ function addBomb() {
     scoreText.setText('Score: ' + score);
 }
 
+// Fire stars from the front of the ship
 function fireLaser(game) {
     star = stars.create(player.x, player.y, 'star').setScale(0.7);
     star.allowGravity = false;
@@ -155,55 +218,9 @@ function fireLaser(game) {
 
 }
 
+// Remove the star and the bomb if they collide
 function starHitBomb(star, bomb) {
     star.disableBody(true, true);
     bomb.disableBody(true, true);
 
-}
-
-titleScene.preload = function() {
-    this.load.image('sky', 'assets/sky.png');
-    this.load.image('ship', 'assets/shuttle2.png');
-}
-
-titleScene.create = function() {
-    this.add.image(400, 300, 'sky');
-    player = this.physics.add.sprite(400, 300, 'ship').setScale(0.7);
-    this.add.text(150, 150, 'PRESS E TO START ON EASY!', {fontSize: '32px'});
-    this.add.text(150, 190, 'PRESS M TO START ON MEDIUM!', {fontSize: '32px'});
-    this.add.text(150, 230, 'PRESS H TO START ON HARD!', {fontSize: '32px'});
-    cursors = this.input.keyboard.createCursorKeys();
-    diffSelect = this.input.keyboard.addKeys({ 'easy': Phaser.Input.Keyboard.KeyCodes.E, 'med': Phaser.Input.Keyboard.KeyCodes.M, 'hard':Phaser.Input.Keyboard.KeyCodes.H });
-}
-
-titleScene.update = function() {
-    if (diffSelect.easy.isDown) {
-        interval = 10000;
-        this.scene.start('main');
-    } else if (diffSelect.med.isDown) {
-        interval = 5000;
-        this.scene.start('main');
-    } else if (diffSelect.hard.isDown) {
-        interval = 2000;
-        this.scene.start('main');
-    }
-}
-
-gameOverScene.preload = function() {
-    this.load.image('sky', 'assets/sky.png');
-}
-
-gameOverScene.create = function() {
-    this.add.image(400, 300, 'sky');
-    this.add.text(200, 150, "GAME OVER!", { fontSize: '64px' });
-    this.add.text(100, 300, "PRESS SPACE BAR TO RESTART!", { fontSize: '32px'});
-    highScoreText.setText('High Score: ' + highScore);
-}
-
-gameOverScene.update = function() {
-    cursors = this.input.keyboard.createCursorKeys();
-
-    if (cursors.space.isDown) {
-        this.scene.start('title');
-    }
 }
