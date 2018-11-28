@@ -121,8 +121,14 @@ mainScene.update = function() {
     }
 
     player.setVelocity(0, 0);
-            
-    if (cursors.up.isDown) {
+
+    if (cursors.up.isDown && cursors.left.isDown) {
+        player.angle -= 5;
+        this.physics.velocityFromAngle(player.angle - 90, 200, player.body.velocity);
+    } else if (cursors.up.isDown && cursors.right.isDown) {
+        player.angle += 5;
+        this.physics.velocityFromAngle(player.angle - 90, 200, player.body.velocity);
+    } else if (cursors.up.isDown) {
         this.physics.velocityFromAngle(player.angle - 90, 200, player.body.velocity);
     } else if (cursors.left.isDown) {
         player.angle -= 5;
@@ -130,7 +136,7 @@ mainScene.update = function() {
         player.angle += 5;
     } else if (cursors.space.isDown) {
         fireLaser(this);
-    }
+    } 
 
     if (player.x < -10) {
         player.x = 800;
