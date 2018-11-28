@@ -29,8 +29,6 @@ let game = new Phaser.Game(config);
 mainScene.preload = function() {
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('star', 'assets/star.png');
-
-    this.load.audio('gameover', 'assets/gameover.wav');
 }
 
 mainScene.create = function() {
@@ -113,8 +111,6 @@ function collideWithBomb(player, bomb) {
     player.setTint(0xff0000);
 
     gameOver = true;
-
-    this.sound.play('gameover');
 
 }
 
