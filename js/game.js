@@ -27,9 +27,7 @@ let interval = 5000;
 let game = new Phaser.Game(config);
 
 mainScene.preload = function() {
-    this.load.image('sky', 'assets/sky.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.image('ship', 'assets/shuttle2.png');
     this.load.image('star', 'assets/star.png');
 
     this.load.audio('gameover', 'assets/gameover.wav');
