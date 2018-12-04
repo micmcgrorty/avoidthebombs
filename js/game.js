@@ -26,6 +26,7 @@ let engineSound;
 let highScore = 0;
 let difficulty = 2;
 let interval = 5000;
+let heat = 0;
 
 // Define game
 let game = new Phaser.Game(config);
@@ -95,7 +96,14 @@ mainScene.create = function() {
         delay: interval,
         callback: addBomb,
         callbackScope: this,
-        repeat: 99
+        repeat: Infinity
+    });
+
+    coolDown = this.time.addEvent({
+        delay: 1000,
+        callback: reduceHeat,
+        callbackScope: this,
+        repeat: Infinity
     });
             
     this.physics.add.collider(bombs, player, collideWithBomb, null, this);
@@ -218,15 +226,29 @@ function addBomb() {
 
 // Fire stars from the front of the ship
 function fireLaser(game) {
-    star = stars.create(player.x, player.y, 'star').setScale(0.7);
-    star.allowGravity = false;
-    game.physics.velocityFromAngle(player.angle - 90, 200, star.body.velocity);
-
+    if (heat < 50) {
+        star = stars.create(player.x, player.y, 'star').setScale(0.7);
+        star.allowGravity = false;
+        game.physics.velocityFromAngle(player.angle - 90, 200, star.body.velocity);
+        heat++;
+        console.log(heat);
+    }
 }
 
 // Remove the star and the bomb if they collide
 function starHitBomb(star, bomb) {
     star.disableBody(true, true);
     bomb.disableBody(true, true);
+}
 
+// Reduce the heat from the star gun 
+function reduceHeat() {
+    if (heat == 50) {
+        heat -= 2;
+    } else {
+        heat -= 10;
+    }
+
+    if (heat < 0) heat = 0;
+    console.log(heat);
 }
