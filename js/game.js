@@ -76,8 +76,9 @@ mainScene.preload = function() {
 mainScene.create = function() {
     this.add.image(400, 300, 'sky');
     scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '16px'});
-    highScoreText = this.add.text(660, 16, 'High Score: ' + highScore, {fontSize: '16px'});
+    highScoreText = this.add.text(660, 16, `High Score: ${highScore}`, {fontSize: '16px'});
     instructions = this.add.text(100, 400, 'Turn with left and right, thrust with up and blast with space!', {fontSize: '16px'});
+    heatText = this.add.text(300, 16, 'Gun heat: 0%', {fontSize: '16px'});
     if (highScore > 0) {
         instructions.setText('');
     }
@@ -112,6 +113,7 @@ mainScene.create = function() {
     gameOver = false;
     
     score = 0;
+    heat = 0;
 
 }
 
@@ -127,6 +129,8 @@ mainScene.update = function() {
     if (score > highScore) {
         highScore = score;
     }
+
+    heatText.setText(`Gun heat: ${heat * 2}%`);
 
     player.setVelocity(0, 0);
 
@@ -167,7 +171,7 @@ gameOverScene.create = function() {
     this.add.image(400, 300, 'sky');
     this.add.text(200, 150, "GAME OVER!", { fontSize: '64px' });
     this.add.text(100, 300, "PRESS SPACE BAR TO RESTART!", { fontSize: '32px'});
-    highScoreText.setText('High Score: ' + highScore);
+    highScoreText.setText(`High Score: ${highScore}`);
 }
 
 // Game over update - back to title if button pressed
@@ -186,7 +190,6 @@ function collideWithBomb(player, bomb) {
     player.setTint(0xff0000);
 
     gameOver = true;
-
 }
 
 // Add bombs at a random place off screen and increase score by 1
@@ -221,7 +224,7 @@ function addBomb() {
     bomb.allowGravity = false;
 
     score += 1;
-    scoreText.setText('Score: ' + score);
+    scoreText.setText(`Score: ${score}`);
 }
 
 // Fire stars from the front of the ship
@@ -231,7 +234,6 @@ function fireLaser(game) {
         star.allowGravity = false;
         game.physics.velocityFromAngle(player.angle - 90, 200, star.body.velocity);
         heat++;
-        console.log(heat);
     }
 }
 
@@ -250,5 +252,4 @@ function reduceHeat() {
     }
 
     if (heat < 0) heat = 0;
-    console.log(heat);
 }
